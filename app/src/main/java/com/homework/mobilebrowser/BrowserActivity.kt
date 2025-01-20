@@ -3,24 +3,22 @@ package com.homework.mobilebrowser
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import android.content.Intent
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.GridView
-import androidx.appcompat.widget.Toolbar
-import com.homework.mobilebrowser.adapter.ItemAdapter
-import com.homework.mobilebrowser.model.Item
+import android.webkit.WebView
+import android.webkit.WebViewClient
 
-class MainActivity : AppCompatActivity() {
 
-    private lateinit var gridView: GridView
+class BrowserActivity : AppCompatActivity() {
+    private lateinit var webViewWV: WebView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_browser)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -30,23 +28,14 @@ class MainActivity : AppCompatActivity() {
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        gridView = findViewById(R.id.grid_view)
+        webViewWV = findViewById(R.id.web_view)
+        webViewWV.webViewClient = WebViewClient()
+        webViewWV.settings.javaScriptEnabled = true
 
-        val items = listOf(
-            Item("Yandex", "https://yandex.ru", R.drawable.yandex),
-            Item("Gismeteo", "https://www.gismeteo.ru/", R.drawable.gismeteo)
-        )
-
-        val adapter = ItemAdapter(this, items)
-        gridView.adapter = adapter
-
-        gridView.setOnItemClickListener { parent, view, position, id ->
-            val item = adapter.getItem(position) as Item
-            val intent = Intent(this, BrowserActivity::class.java)
-            intent.putExtra("url", item.url)
-            startActivity(intent)
+        val url = intent.getStringExtra("url")
+        if (url != null) {
+            webViewWV.loadUrl(url)
         }
-
     }
 
 
@@ -62,6 +51,4 @@ class MainActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-
 }
